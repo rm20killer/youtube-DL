@@ -24,11 +24,6 @@ async function downloadPlaylist(playlist) {
         
     }
     //get info for video
-    let info = await ytdl.getInfo(videos[i].id);
-    let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-    console.log("Formats with only audio: " + audioFormats.length);
-    let audio = audioFormats[0];
-    console.log("Downloading: " + videos[i].title);
     let name = videos[i].title.replace(/[^\w\s]/gi, "");
     //if file already exists, skip
     if (fs.existsSync(playlist.title + "/" + name + ".mp3")) {
@@ -38,18 +33,35 @@ async function downloadPlaylist(playlist) {
             playlist.title + "/info.txt",
             name + " - " + videos[i].url + "- SKIPPED\n"
         );
+          
         continue;
     }
-    await ytdl(videos[i].id, { format: audio }).pipe(
-      fs.createWriteStream(playlist.title + "/" + name + ".mp3")
-    );
-    console.log("Downloaded: " + videos[i].title);
-    //add to info file
-    fs.appendFileSync(
-        playlist.title + "/info.txt",
-        name + " - " + videos[i].url + "\n"
-    );
-    console.log("Progress: " + ((i + 1) / videos.length) * 100 + "%");
+    console.log("Info for video: " + videos[i].title);
+    try {
+      let info = await ytdl.getInfo(videos[i].id);
+      if(!info) {
+        console.log("Error getting info for video, skipping...");
+        continue;
+      }
+      let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+      console.log("Formats with only audio: " + audioFormats.length);
+      let audio = audioFormats[0];
+      console.log("Downloading: " + videos[i].title);
+      await ytdl(videos[i].id, { format: audio }).pipe(
+        fs.createWriteStream(playlist.title + "/" + name + ".mp3")
+      );
+      console.log("Downloaded: " + videos[i].title);
+      //add to info file
+      fs.appendFileSync(
+          playlist.title + "/info.txt",
+          name + " - " + videos[i].url + "\n"
+      );
+      console.log("Progress: " + ((i + 1) / videos.length) * 100 + "%");      
+    } catch (error) {
+      console.log("Error downloading video, skipping...");
+      continue;
+    }
+
   }
 }
 
