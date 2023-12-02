@@ -9,6 +9,12 @@
   "author": "RM20",
   "license": "ISC",
   "dependencies": {
+    "fluent-ffmpeg": "^2.1.2",
+    "genius-lyrics": "^4.4.6",
+    "get-mp3-duration": "^1.0.0",
+    "leo-profanity": "^1.7.0",
+    "node-id3": "^0.2.6",
+    "updated-youtube-info": "^1.4.7",
     "youtube-playlist": "^1.0.4",
     "ytdl-core": "^4.11.5",
     "ytfps": "^1.1.0"
